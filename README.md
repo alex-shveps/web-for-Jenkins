@@ -128,3 +128,150 @@ git status
 
 #### 4) Create 2 EC_2 instance on AWS:
 
+Use proccesor - t2.micro
+Name - Jenkins, Web
+OS images - Ubuntu Server 20.04
+We choose key pair
+Select security group with open port: 22, 53, 80, 8080
+Configure storage
+
+#### 5) Login on AWS_EC2_Jenkins server:
+
+Use MobaXtem for SSH connect to server
+![](screnn/connect_jenkins_host.png)
+
+#### 6) Setup AWS_EC2_Jenkins server:
+
+Create apt file for install Jenkins:
+````
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+````
+
+Install Java:
+````
+sudo apt-get update
+
+sudo apt install openjdk-11-jre
+````
+
+Install Jenkins:
+````
+sudo apt-get install jenkins
+````
+
+Check status Jenkins:
+````
+sudo systemctl status jenkins
+````
+![](screnn/systemctl_jenkins.png)
+
+#### 7) Login on Jenkins in Web and setup:
+
+Connect to host_ip:8080
+Write password from fiel /var/lib/jenkins/secrets/initialAdminPassword
+````
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+````
+
+Use standart installation plugin.
+Create user with credentials
+Install plagin to SSH connect 
+![](screnn/install_plugin.png)
+
+Connect to GitHub account with SSH key
+On EC2_Jenkins generait key pair
+````
+ssh-keygen
+````
+![](screnn/generaite_keypair.png)
+
+Added public key to GitHub account
+````
+cat .ssh/id_rsa.pub
+````
+![](screnn/github_keys.png)
+
+Added global credentials to SSH connect GitHub
+![](screnn/ssh_jenkins_git.png) 
+
+#### 8) Login on AWS_EC2_Web server:
+
+Use MobaXtem for SSH connect to server
+![](screnn/connect_web_host.png)
+
+#### 9) Setup AWS_EC2_Web server:
+
+Install Apache Web Server
+ 
+````
+sudo apt update
+sudo apt install apache2
+sudo ufw allow 'Apache'
+sudo systemctl status apache2
+````
+![](screnn/systemctl_apache2.png)
+
+Check Web Browser
+wright ip_AWS_EC2_Web
+![](screnn/apache2_browser.png)
+
+WE need to modify permission on html directory
+````
+sudo chmod -R 777 /var/www/
+````
+
+#### 10) Setup connect Jenkins to Web_server
+
+Go to configuration Jenkins on Webhost
+Write privat SSH key from AWS
+Write instance name, ip and username
+Remove directory
+````
+/var/www/html/
+````
+![](screnn/ssh_agent.png)
+
+#### 11) Create new job in Jenkins
+
+Write name job and discription
+Source Code Management we choose Git and copy GitHub SSH conect link
+````
+git@github.com:alex-shveps/web-for-Jenkins.git
+````
+![](screnn/jenkins_git.png)
+
+Build Triggers choose Poll SCM
+Write 
+````
+H/2 * * * *
+````
+![](screnn/build_trigger.png)
+
+Setup SSH publisher
+Choose nameserver
+Source file write "*"
+
+Exec command to restart Web_server
+````
+sudo systemctl restart apache2
+````
+![](screnn/ssh_publisher.png)
+
+#### 12) Save and Run our Job
+
+See console Output
+![](screnn/console_output.png)
+
+Update our Web Browser page on EC2_Web server
+![](screnn/first_job_web.png)
+
+#### 13) Do commit from localhost with some change and push to GitHub
+
+![](screnn/local_commit.png)
+![]
+
