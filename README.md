@@ -273,5 +273,14 @@ Update our Web Browser page on EC2_Web server
 #### 13) Do commit from localhost with some change and push to GitHub
 
 ![](screnn/local_commit.png)
-![]
+---
+![](screnn/git_push.png)
 
+#### 14) Wait a Job in Jenkins
+
+![](screnn/build_queue.png)
+
+Update our Web Browser page on EC2_Web server
+![](screnn/commit_web_server.png)
+
+## Conclusions: I would like to automate the creation of EC_2 instances and their configuration to speed up the project deployment process. You can also use docker to reduce the load on servers.
